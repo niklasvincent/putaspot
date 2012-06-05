@@ -56,7 +56,12 @@ class Model
 	{
 		$pieces = array();
 		$latLng = array((float)$lat, (float)$lng);
-		$cursor = $this->content->find(array('loc' => array('$near' => $latLng, '$maxDistance' => (float)$this->config['putaspot']['distance'])));
+		$cursor = $this->content->find(array(
+			'loc' => array(
+				'$near' => $latLng, '$maxDistance' => (float)$this->config['putaspot']['distance']),
+			'expires' => array(
+				'$gt' => time())
+		));
 		while ( $cursor->hasNext() ) {
 			$piece = $cursor->getNext();
 			$pieces[] = $piece;
