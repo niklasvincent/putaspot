@@ -71,6 +71,12 @@ class URLNormalizer {
     }
 
 	public function getHost() {
+		// Add support for Spotify URI:s
+		if ( empty($this->host) ) {
+			if ( strstr($this->url, 'spotify:') ) {
+				return 'spotify.com';
+			}
+		}
 		return $this->host;
 	}
 	

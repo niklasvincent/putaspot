@@ -74,6 +74,7 @@ class Model
 		
 		// Check for suitable meta-data class
 		$class = str_replace('.', '_', ucfirst($service));
+		error_log($class); // DEBUG
 		$classFileName = APPLICATION_PATH . '/library/Meta/' . $class . '.php';
 		if ( file_exists($classFileName) ) {
 			require_once $classFileName;
@@ -82,7 +83,6 @@ class Model
 		}
 
 		$status = $this->content->insert($content, array('safe' => true));
-		error_log(var_export($status, true));
 		return $content;
 	}
 	

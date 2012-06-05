@@ -5,6 +5,18 @@ class Spotify_com
 
 	public function resolve($content)
 	{
+		if ( ! preg_match('/playlist/', $content['url']) ) {
+			return $this->song($content);
+		}
+		
+		$content['service'] 	= 'spotify';
+		$content['type']		= 'playlist';
+
+		return $content;
+	}
+	
+	public function song($content)
+	{
 		$query = sprintf(
 			'http://ws.spotify.com/lookup/1/.json?uri=%s', 
 			$content['url']
