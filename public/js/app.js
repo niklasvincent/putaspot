@@ -52,6 +52,7 @@ function addSpot(spot)
 var map;
 var done;
 var createdMarker;
+var circle;
 
 function initialize(lat, lng) {
 	done = false;
@@ -59,11 +60,21 @@ function initialize(lat, lng) {
 	var myOptions = {
 		zoom: 18,
 		center: latLng,
+		draggable: false,
+		zoomable: false,
+		disableDoubleClickZoom: true,
+		panControl: false,
+	    zoomControl: false,
+	    scaleControl: false,
+		keyboardShortcuts : false,
+		navigationControl : false,
+		scrollwheel : false,
+		streetViewControl : false,
 		mapTypeId: google.maps.MapTypeId.ROADMAP
 	};
   
 	map = new google.maps.Map(document.getElementById('map_canvas'), myOptions);
-	
+		
 	google.maps.event.addListener(map, 'click', function(event) {
 	    placeMarker(event.latLng);
 	});
@@ -115,7 +126,6 @@ function placeMarker(location) {
 		checkInput(false);
 	});
 	
-	map.setCenter(location);
 }
 
 function gotLocation(position)
