@@ -74,16 +74,8 @@ function initialize(lat, lng) {
 	};
   
 	map = new google.maps.Map(document.getElementById('map_canvas'), myOptions);
-		
-	google.maps.event.addListener(map, 'click', function(event) {
-	    placeMarker(event.latLng);
-	});
 	
-	var visitorPosition = new google.maps.Marker({
-		position: latLng,
-		map: map
-	});
-	visitorPosition.setIcon('http://www.google.com/intl/en_us/mapfiles/ms/micons/blue-dot.png');
+	placeMarker(latLng);
 	
 	getSpots(lat, lng, function(spots) {
 		spots = jQuery.parseJSON(spots);
@@ -118,6 +110,10 @@ function placeMarker(location) {
 	checkInput(false);
 	
 	marker.setDraggable(true);
+	
+	google.maps.event.addListener(map, 'click', function(event) {
+	    createdMarker.setPosition(event.latLng);
+	});
 	
 	google.maps.event.addListener(marker, 'dragend', function() {
 		var newPosition = marker.getPosition();
