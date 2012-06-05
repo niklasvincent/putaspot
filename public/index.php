@@ -4,7 +4,11 @@ require '../bootstrap.php';
 $app = new Slim();
 
 $app->get('/', function () {
-    View::renderPage('index', array('hello' => 'World'));
+    View::renderPage('index', array());
+});
+
+$app->get('/m', function () {
+    View::render('mobile', array());
 });
 
 $app->get('/near.json', function () {
@@ -30,16 +34,6 @@ $app->post('/add', function () {
 	
 	global $model;
 	echo json_encode($model->add($content));
-});
-
-//PUT route
-$app->put('/put', function () {
-    echo 'This is a PUT route';
-});
-
-//DELETE route
-$app->delete('/delete', function () {
-    echo 'This is a DELETE route';
 });
 
 $app->run();
