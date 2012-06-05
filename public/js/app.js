@@ -57,7 +57,7 @@ function initialize(lat, lng) {
 	done = false;
 	var latLng = new google.maps.LatLng(lat, lng);
 	var myOptions = {
-		zoom: 13,
+		zoom: 18,
 		center: latLng,
 		mapTypeId: google.maps.MapTypeId.ROADMAP
 	};
@@ -67,6 +67,12 @@ function initialize(lat, lng) {
 	google.maps.event.addListener(map, 'click', function(event) {
 	    placeMarker(event.latLng);
 	});
+	
+	var visitorPosition = new google.maps.Marker({
+		position: latLng,
+		map: map
+	});
+	visitorPosition.setIcon('http://www.google.com/intl/en_us/mapfiles/ms/micons/blue-dot.png');
 	
 	getSpots(lat, lng, function(spots) {
 		spots = jQuery.parseJSON(spots);
