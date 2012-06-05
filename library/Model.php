@@ -7,12 +7,15 @@ class Model
 	private $db;
 	
 	private $url;
+	private $config;
 	
 	// Collections
 	private $content;
 	
 	public function __construct($config)
 	{
+		$this->config = $config;
+		
 		// Check hostname
 		if ( ! isset($config['database']['host']) || empty($config['database']['host']) ) {
 			$config['database']['host'] = 'localhost';
@@ -52,8 +55,8 @@ class Model
 	public function near($lng, $lat)
 	{
 		$pieces = array();
-		$lngLat = array($lng, $lat);
-		$cursor = $this->content->find(array('loc' => array('$near' => $lngLat)));
+		$latLng = array((float)$lat, (float)$lng);
+		$cursor = $this->content->find(array('loc' => array('$near' => $latLng, '$maxDistance' => (float)$this->config['putaspot']['distance'])));
 		while ( $cursor->hasNext() ) {
 			$piece = $cursor->getNext();
 			$pieces[] = $piece;
@@ -63,6 +66,10 @@ class Model
 	
 	public function add($content)
 	{
+		// Add timestamps and expiration time
+		$content['added'] 	= time();
+		$content['expires']	= time() + (int)$this->config['putaspot']['expiration'];
+		
 		// JSON encoding might mess up float values
 		$content['loc'][0] = (float)$content['loc'][0];
 		$content['loc'][1] = (float)$content['loc'][1];
