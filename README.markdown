@@ -1,3 +1,13 @@
+#Desktop Version
+Google Maps API, HTML5 navigation (for positioning) and JQuery.
+
+<img src="http://dl.dropbox.com/u/1236795/putaspot-desktop.png" />
+
+#Mobile Version
+jQuery Mobile, jQuery and HTML5 navigation (for positioning).
+
+<img src="http://dl.dropbox.com/u/1236795/putaspot-mobile.png" />
+
 ##License
 
 Distributed under the GNU AFFERO GENERAL PUBLIC LICENSE <http://www.gnu.org/licenses/agpl-3.0.html>
