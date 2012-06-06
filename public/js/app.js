@@ -46,6 +46,7 @@ function addSpot(spot)
 	google.maps.event.addListener(marker, 'click', function() {
     	showMeta(spot, marker);
   	});
+  $('#input').fadeOut();
 }
 
 // Google Maps
@@ -85,13 +86,6 @@ function initialize(lat, lng) {
 	});
 }
 
-function checkInput(override)
-{
-	if ( ( $('#url').val().length > 0 || override ) && done ) {
-		$('#create_button').fadeIn('slow');
-	}	
-}
-
 function placeMarker(location) {
 	if ( done == false ) {
 		var marker = new google.maps.Marker({
@@ -107,15 +101,15 @@ function placeMarker(location) {
 	$('#lat').val(marker.getPosition().lat());
 	$('#lng').val(marker.getPosition().lng());
 	
-	checkInput(false);
-	
 	marker.setDraggable(true);
 	
 	google.maps.event.addListener(map, 'click', function(event) {
-	    createdMarker.setPosition(event.latLng);
+    console.log(event);
+	  createdMarker.setPosition(event.latLng);
 		var newPosition = createdMarker.getPosition();
 		$('#lat').val(newPosition.lat());
 		$('#lng').val(newPosition.lng());
+    $('#input').offset({top: event.pixel.y, left: event.pixel.x+240}).fadeIn();
     $('#url').focus();
 	});
 	
@@ -145,38 +139,12 @@ $(document).ready(function() {
 		initialize(55.60934443876994, 13.002534539672865);
 	}
 	
-	var inputField = $('#url');
-	
-	inputField.change(function() {
-		checkInput(false);
-	});
-	
-	inputField.keypress(function() {
-		checkInput(false);
-	});
-	
-	inputField.bind('paste', function() {
-		checkInput(true);	
-	});
-	
-	var oldValue = inputField.text();
-	inputField.bind("drop", function() {
-	    //when the drop happens the input value will not be updated yet
-	    //use a timeout to allow the input value to change.
-	    setTimeout($.proxy(function() {
-	        if (this.value !== oldValue) {
-	            $(this).trigger('change');
-	        }
-	    }, this), 0);
-	});
-	
-	$('#create_button').click(function() {
+	$('#submit').submit(function(e) {
+    e.preventDefault();
 		var content = {
 			"url": $('#url').val(),
 			"loc": [$('#lat').val(), $('#lng').val()]
 		};
-		$('#create_button').hide();
-		$('#url').hide();
 		
 		createdMarker.setMap(null);
 		
