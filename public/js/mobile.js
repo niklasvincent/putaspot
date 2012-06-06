@@ -25,6 +25,10 @@ function initialize(lat, lng)
 				addToList(spot.title, '', '/img/mobile/youtube.png', spot.url);
 			} else if ( spot.service === 'soundcloud' ) {
 				addToList(spot.title, spot.user.name, '/img/mobile/soundcloud.png', spot.url);
+			} else if ( spot.service === 'mixcloud' && spot.type) == 'sound' {
+				addToList(spot.title, spot.artist, '/img/mobile/mixcloud.png', spot.url);
+			} else if ( spot.service === 'mixcloud' && spot.type) == 'cast' {
+				addToList(spot.title, spot.user.username, '/img/mobile/mixcloud.png', spot.url);
 			}
 		});
 		$('#spots').listview('refresh');

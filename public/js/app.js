@@ -17,8 +17,10 @@ function showMeta(spot, marker)
 		$('#meta').html('<iframe width="100%" height="166" scrolling="no" frameborder="no" src="http://w.soundcloud.com/player/?url=http%3A%2F%2Fapi.soundcloud.com%2Ftracks%2F'+spot.track_id+'&show_artwork=true"></iframe>').fadeIn();
 	} else if ( spot.service === 'youtube' ) {
 		$('#meta').html('<iframe width="560" height="315" src="http://www.youtube.com/embed/'+spot.video_id+'" frameborder="0" allowfullscreen></iframe>').fadeIn();
+	} else if ( spot.service === 'mixcloud' && spot.type === 'cast' ) {
+		$('#meta').html('<iframe width="560" height="315" src="'+spot.widget+'" frameborder="0" allowfullscreen></iframe>').fadeIn();
 	} else {
-		$('#meta').html('<a href="'+spot.url+'" target="_blank">'+spot.url+'</a>');
+		$('#meta').html('<a href="'+spot.url+'" target="_blank">'+spot.url+'</a>').fadeIn();
 	}
 }
 
