@@ -86,7 +86,6 @@ class Model
 		
 		// Check for suitable meta-data class
 		$class = str_replace('.', '_', ucfirst($service));
-		error_log($class); // DEBUG
 		$classFileName = APPLICATION_PATH . '/library/Meta/' . $class . '.php';
 		if ( file_exists($classFileName) ) {
 			require_once $classFileName;
