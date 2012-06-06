@@ -57,6 +57,11 @@ function getSpots(lat, lng, callback)
 
 function addSpot(spot)
 {
+  if (spot.error == "TOO_FAR_AWAY") {
+    alert("Hey you! You're not even near that spot!");
+    $('#input').fadeOut();
+    return false;
+  }
 	var position = new google.maps.LatLng(spot.loc[0], spot.loc[1]);
 	var marker = new google.maps.Marker({
 		position: position,
