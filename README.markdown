@@ -135,6 +135,11 @@ To turn on Geospatial indexing:
 	expiration=604800
 	distance=0.0045026898
 	
+	[soundcloud]
+	api_key="YOURSOUNDCLOUD_API_KEY"
+	
 * expiration: After this period (seconds) the content will no longer be listed.
 
 * distance: Allowed distance to "discover" as a user. Defaults to about 250 meters.
+
+* api_key: Soundcloud API key <http://developers.soundcloud.com/>
