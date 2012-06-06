@@ -19,6 +19,10 @@ function single(spot, marker)
 
 function showMeta(spot, marker)
 {
+  if ( spot.error == 'TOO_FAR_AWAY' ) {
+    alert('Ooop! That spot\'s a bit far away. Guess you\'ll have to go there!');
+    return;
+  }
 	if ( null === spot ) {
 		return;
 	}
