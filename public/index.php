@@ -1,22 +1,35 @@
 <?php
+/**
+ * @file
+ *
+ * Index of Putaspot: the revolutionary new thing that has to do with places
+ * and stuff.
+ */
 
-require '../bootstrap.php';
+// Introduce a web root constant for better relative path handling 
+define('WEB_ROOT', dirname(__FILE__));
+
+require WEB_ROOT . '/../bootstrap.php';
 $app = new Slim();
 
+// Get the standard webpage
 $app->get('/', function () {
     View::renderPage('index', array());
 });
 
+// Get the mobile version
 $app->get('/m', function () {
     View::render('mobile', array());
 });
 
+// API delivers some sweet JSON of nearby... stuff
 $app->get('/near.json', function () {
 	global $model;
 	global $_GET;
 	echo json_encode($model->near($_GET['lng'], $_GET['lat']));
 });
 
+// This is what's called when you PUT a SPOT
 $app->post('/add', function () {
 	$content = json_decode(file_get_contents("php://input"), true);
 
