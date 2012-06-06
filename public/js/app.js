@@ -64,16 +64,16 @@ function initialize(lat, lng) {
 	var myOptions = {
 		zoom: 18,
 		center: latLng,
-		draggable: false,
-		zoomable: false,
+		draggable: true,
+		zoomable: true,
 		disableDoubleClickZoom: true,
-		panControl: false,
-	    zoomControl: false,
-	    scaleControl: false,
-		keyboardShortcuts : false,
-		navigationControl : false,
-		scrollwheel : false,
-		streetViewControl : false,
+		panControl: true,
+	    zoomControl: true,
+	    scaleControl: true,
+		keyboardShortcuts : true,
+		navigationControl : true,
+		scrollwheel : true,
+		streetViewControl : true,
 		mapTypeId: google.maps.MapTypeId.ROADMAP
 	};
   
