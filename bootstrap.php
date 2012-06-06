@@ -3,6 +3,7 @@
 define('APPLICATION_PATH', dirname(__FILE__));
 define('APPLICATION_CONFIG', APPLICATION_PATH . '/config.ini');
 require APPLICATION_PATH . '/library/URLNormalizer.php';
+require APPLICATION_PATH . '/library/HTTP.php';
 require APPLICATION_PATH . '/library/Slim/Slim.php';
 require APPLICATION_PATH . '/library/Mustache/Mustache.php';
 require APPLICATION_PATH . '/library/View.php';
