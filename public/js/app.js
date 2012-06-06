@@ -113,6 +113,9 @@ function placeMarker(location) {
 	
 	google.maps.event.addListener(map, 'click', function(event) {
 	    createdMarker.setPosition(event.latLng);
+		var newPosition = createdMarker.getPosition();
+		$('#lat').val(newPosition.lat());
+		$('#lng').val(newPosition.lng());
 	});
 	
 	google.maps.event.addListener(marker, 'dragend', function() {
