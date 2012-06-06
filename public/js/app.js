@@ -7,8 +7,24 @@ var app = Sammy('#main', function() {
 	
 });
 
+function single(spot, marker)
+{
+	$.ajax({
+	  type: 'GET',
+	  url: '/single.json?id='+spot._id.$id+'&lng='+realPosition.lng()+'&lat='+realPosition.lat(),
+	  success: showMeta,
+	  dataType: 'json'
+	});	
+}
+
 function showMeta(spot, marker)
 {
+	if ( null === spot ) {
+		return;
+	}
+	if ( typeof(spot.url) === 'undefined' ) {
+		return;
+	}
 	$('#info').fadeOut();
 	if ( spot.service === 'spotify' && spot.type === 'song' ) {
 		$('#meta').html('<iframe src="https://embed.spotify.com/?uri='+spot.url+'" width="300" height="380" frameborder="0" allowtransparency="true"></iframe>').fadeIn();
@@ -30,7 +46,12 @@ function getSpots(lat, lng, callback)
 	$.ajax({
 	  type: 'GET',
 	  url: '/near.json?lat='+lat+'&lng='+lng,
-	  success: callback,
+	  success: function(spots) {
+			spots = jQuery.parseJSON(spots);
+			$.each(spots, function(index, spot) {
+				addSpot(spot);
+			});
+	  }
 	});
 }
 
@@ -47,12 +68,13 @@ function addSpot(spot)
 		marker.setIcon('/img/markers/'+spot.service+'.png');
 	}
 	google.maps.event.addListener(marker, 'click', function() {
-    	showMeta(spot, marker);
+    	single(spot, marker);
   	});
   $('#input').fadeOut();
 }
 
 // Google Maps
+var realPosition;
 var map;
 var done;
 var createdMarker;
@@ -61,6 +83,7 @@ var circle;
 function initialize(lat, lng) {
 	done = false;
 	var latLng = new google.maps.LatLng(lat, lng);
+	realPosition = latLng;
 	var myOptions = {
 		zoom: 18,
 		center: latLng,
@@ -73,20 +96,21 @@ function initialize(lat, lng) {
 		keyboardShortcuts : true,
 		navigationControl : true,
 		scrollwheel : true,
-		streetViewControl : true,
+		streetViewControl : false,
 		mapTypeId: google.maps.MapTypeId.ROADMAP
 	};
   
 	map = new google.maps.Map(document.getElementById('map_canvas'), myOptions);
 	
+	google.maps.event.addListener(map, 'center_changed', function(event) {
+		var newPosition = map.getCenter();
+		placeMarker(newPosition);
+		getSpots(newPosition.lat(), newPosition.lng());
+	});
+	
 	placeMarker(latLng);
 	
-	getSpots(lat, lng, function(spots) {
-		spots = jQuery.parseJSON(spots);
-		$.each(spots, function(index, spot) {
-			addSpot(spot);
-		});
-	});
+	getSpots(lat, lng);
 }
 
 function placeMarker(location) {
@@ -142,11 +166,26 @@ $(document).ready(function() {
 		initialize(55.60934443876994, 13.002534539672865);
 	}
 	
+	$('#geocode').submit(function(e) {
+    	e.preventDefault();
+		var geocoder = new google.maps.Geocoder();
+		geocoder.geocode( {'address': $('#address').val() }, function(data) {
+			if ( typeof(data[0].geometry) != 'undefined' ) {
+				var lat = data[0].geometry.location.$a;
+				var lng = data[0].geometry.location.ab;
+				var newPosition = new google.maps.LatLng(lat, lng);
+				map.setCenter(newPosition);
+				getSpots(lat, lng);
+			}
+		});
+	});
+	
 	$('#submit').submit(function(e) {
-    e.preventDefault();
+    	e.preventDefault();
 		var content = {
 			"url": $('#url').val(),
-			"loc": [$('#lat').val(), $('#lng').val()]
+			"loc": [$('#lat').val(), $('#lng').val()],
+			"user_loc": [realPosition.lat(), realPosition.lng()]
 		};
 		
 		createdMarker.setMap(null);

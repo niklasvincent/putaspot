@@ -11,6 +11,7 @@ class Model
 	
 	// Collections
 	private $content;
+	private $log;
 	
 	public function __construct($config)
 	{
@@ -39,6 +40,7 @@ class Model
 		
 		// Initialize collections
 		$this->content = new MongoCollection($this->db, 'content');
+		$this->log = new MongoCollection($this->db, 'log');
 		
 		// Initialize URLNormalizer
 		$this->url = new URLNormalizer();
@@ -58,19 +60,57 @@ class Model
 		$latLng = array((float)$lat, (float)$lng);
 		$cursor = $this->content->find(array(
 			'loc' => array(
-				'$near' => $latLng, '$maxDistance' => (float)$this->config['putaspot']['distance']),
+				'$near' => $latLng, 
+				'$maxDistance' => (float)$this->config['putaspot']['explore_distance']),
 			'expires' => array(
 				'$gt' => time())
 		));
 		while ( $cursor->hasNext() ) {
 			$piece = $cursor->getNext();
+			unset($piece['url']);
 			$pieces[] = $piece;
 		}
 		return $pieces;
 	}
 	
+	/**
+	 * Retrieve a single piece of content near given longitude, latitude
+	 *
+	 * @param string $id		Content ID
+	 * @param string $lng 		Longitude
+	 * @param string $lat 		Latitude
+	 * @return array $content	The content
+	 * @author Niklas Lindblad
+	 */
+	public function single($id, $lng, $lat)
+	{
+		$id = new MongoID($id);
+		$latLng = array((float)$lat, (float)$lng);
+		$cursor = $this->content->find(array(
+			'loc' => array(
+				'$near' => $latLng, 
+				'$maxDistance' => (float)$this->config['putaspot']['distance']),
+			'expires' => array(
+				'$gt' => time()),
+			'_id' => $id));
+		while ( $cursor->hasNext() ) {
+			$piece = $cursor->getNext();
+			return $piece;
+		}
+		return null;
+	}
+	
+	/**
+	 * Add content and perform metadata lookup
+	 *
+	 * @param array $content 			The original content
+	 * @return array $processedContent	The processed content
+	 * @author Niklas Lindblad
+	 */
 	public function add($content)
 	{
+		global $_SERVER;
+		
 		// Add timestamps and expiration time
 		$content['added'] 	= time();
 		$content['expires']	= time() + (int)$this->config['putaspot']['expiration'];
@@ -79,7 +119,35 @@ class Model
 		$content['loc'][0] = (float)$content['loc'][0];
 		$content['loc'][1] = (float)$content['loc'][1];
 		
+		// Log event and check if user is close enough
+		// to be allowed to add content
+		$event = array(
+			'loc'		=> array(
+				(float)$content['user_loc'][0],
+				(float)$content['user_loc'][1]
+			),
+			'ip'		=>	$_SERVER['REMOTE_ADDR'],
+			'added'		=> 	0 // Default is to deny
+		);
+		
+		$this->log->insert($event, array('fsync' => true));
+		$eventID = new MongoID($event['_id']);
+		
+		// Check if the user is allowed to do this
+		$cursor = $this->log->find(array(
+			'loc' => array(
+				'$near' => $content['loc'], 
+				'$maxDistance' => (float)$this->config['putaspot']['distance']),
+			'_id' => $eventID)
+		);
+		
+		if ( $cursor == null || ! $cursor->hasNext() ) {
+			// Disallow
+			return array('error' => 'TOO_FAR_AWAY');
+		}
+					
 		// Normalize URL and retrieve service name
+		$content['url'] = strip_tags($content['url']);
 		$this->url->setUrl($content['url']);
 		$url = $this->url->normalize();
 		$service = $this->url->getService();
@@ -93,7 +161,16 @@ class Model
 			$content = $meta->resolve($content);
 		}
 
-		$status = $this->content->insert($content, array('safe' => true));
+		$this->content->insert($content, array(
+			'safe' => true, 
+			'fsync' => true)
+		);
+		
+		// Mark that content was successfully added
+		$event['content_id'] = $content['_id'];
+		$event['added']	 = 1;
+		$this->log->update(array('_id' => $eventID), $event); 
+		
 		return $content;
 	}
 	

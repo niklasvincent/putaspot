@@ -6,6 +6,7 @@ port=27017
 [putaspot]
 expiration=604800
 distance=0.0022513449
+explore_distance=0.14492753623188406
 
 [soundcloud]
 api_key="YOURSOUNDCLOUD_API_KEY"

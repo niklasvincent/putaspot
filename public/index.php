@@ -29,6 +29,13 @@ $app->get('/near.json', function () {
 	echo json_encode($model->near($_GET['lng'], $_GET['lat']));
 });
 
+// API delivers some sweet JSON of specific... stuff
+$app->get('/single.json', function () {
+	global $model;
+	global $_GET;
+	echo json_encode($model->single($_GET['id'], $_GET['lng'], $_GET['lat']));
+});
+
 // This is what's called when you PUT a SPOT
 $app->post('/add', function () {
 	$content = json_decode(file_get_contents("php://input"), true);

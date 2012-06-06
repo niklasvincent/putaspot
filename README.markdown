@@ -38,7 +38,6 @@ Will result in a JSON list of content near the given location:
 	        "_id": {
 	            "$id": "4fce736227cd5c953a000000"
 	        },
-	        "url": "http://open.spotify.com/track/2iGeC71dO7dCR64972QPSX",
 	        "loc": [
 	            53.9676547,
 	            13.9935683
@@ -56,7 +55,6 @@ Will result in a JSON list of content near the given location:
 	        "_id": {
 	            "$id": "4fce5d0427cd5c6830000000"
 	        },
-	        "url": "http://open.spotify.com/track/32kQfEUKkK69AvB6dhq2Fy",
 	        "loc": [
 	            53.967821261857,
 	            13.993965139951
@@ -71,6 +69,12 @@ Will result in a JSON list of content near the given location:
 	        "length": 435.573
 	    }
 	]
+	
+In order to retrieve a piece of content, the user must be nearby:
+
+	GET /single.json?lat=53.967644&lng=13.993422&id=4fce5d0427cd5c6830000000
+	
+will either return 'null' (if not close enough) or the content (with URL) if the user is within reach.
 
 ##Internal (Plugins)
 
@@ -103,7 +107,8 @@ Requirements:
 To turn on Geospatial indexing:
 
 	use YOURDATABASENAME;
-	db.content.ensureIndex( { loc : "2d" } )
+	db.content.ensureIndex( { loc : "2d" } );
+	db.log.ensureIndex( { loc : "2d" } );
 
 ###Apache2 VirtualHost Example
 
@@ -134,6 +139,7 @@ To turn on Geospatial indexing:
 	[putaspot]
 	expiration=604800
 	distance=0.0045026898
+	explore_distance=0.14492753623188406
 	
 	[soundcloud]
 	api_key="YOURSOUNDCLOUD_API_KEY"
@@ -141,5 +147,7 @@ To turn on Geospatial indexing:
 * expiration: After this period (seconds) the content will no longer be listed.
 
 * distance: Allowed distance to "discover" as a user. Defaults to about 250 meters.
+
+* explore_distance: Limit for Google map refresh at zoom/pan. Defaults to about 10 miles.
 
 * api_key: Soundcloud API key <http://developers.soundcloud.com/>
