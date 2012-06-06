@@ -97,7 +97,7 @@ class Model
 			$piece = $cursor->getNext();
 			return $piece;
 		}
-		return null;
+		return array('error' => 'TOO_FAR_AWAY');
 	}
 	
 	/**
