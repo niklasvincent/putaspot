@@ -10,13 +10,13 @@ var app = Sammy('#main', function() {
 function showMeta(spot, marker)
 {
 	if ( spot.service === 'spotify' && spot.type === 'song' ) {
-		$('#meta').html('<iframe src="https://embed.spotify.com/?uri='+spot.url+'" width="300" height="380" frameborder="0" allowtransparency="true"></iframe>').fadeIn();
+		$('#meta').html('<iframe src="https://embed.spotify.com/?uri='+spot.url+'" width="300" height="380" frameborder="0" allowtransparency="true"></iframe>');
 	} else if ( spot.service === 'spotify' && spot.type === 'playlist' ) {
-		$('#meta').html('<iframe src="https://embed.spotify.com/?uri='+spot.url+'&theme=white" width="300" height="380" frameborder="0" allowtransparency="true"></iframe>').fadeIn();
+		$('#meta').html('<iframe src="https://embed.spotify.com/?uri='+spot.url+'&theme=white" width="300" height="380" frameborder="0" allowtransparency="true"></iframe>');
 	} else if ( spot.service === 'soundcloud' ) {
-		$('#meta').html('<iframe width="100%" height="166" scrolling="no" frameborder="no" src="http://w.soundcloud.com/player/?url=http%3A%2F%2Fapi.soundcloud.com%2Ftracks%2F'+spot.track_id+'&show_artwork=true"></iframe>').fadeIn();
+		$('#meta').html('<iframe width="100%" height="166" scrolling="no" frameborder="no" src="http://w.soundcloud.com/player/?url=http%3A%2F%2Fapi.soundcloud.com%2Ftracks%2F'+spot.track_id+'&show_artwork=true"></iframe>');
 	} else if ( spot.service === 'youtube' ) {
-		$('#meta').html('<iframe width="560" height="315" src="http://www.youtube.com/embed/'+spot.video_id+'" frameborder="0" allowfullscreen></iframe>').fadeIn()
+		$('#meta').html('<iframe width="560" height="315" src="http://www.youtube.com/embed/'+spot.video_id+'" frameborder="0" allowfullscreen></iframe>')
 	} else {
 		$('#meta').html('<a href="'+spot.url+'" target="_blank">'+spot.url+'</a>');
 	}
@@ -116,7 +116,6 @@ function placeMarker(location) {
 		var newPosition = createdMarker.getPosition();
 		$('#lat').val(newPosition.lat());
 		$('#lng').val(newPosition.lng());
-    $('#url').focus();
 	});
 	
 	google.maps.event.addListener(marker, 'dragend', function() {
@@ -145,16 +144,29 @@ $(document).ready(function() {
 		initialize(55.60934443876994, 13.002534539672865);
 	}
 	
-	$('#url').change(function() {
+	var inputField = $('#url');
+	
+	inputField.change(function() {
 		checkInput(false);
 	});
 	
-	$('#url').keypress(function() {
+	inputField.keypress(function() {
 		checkInput(false);
 	});
 	
-	$("#url").bind('paste', function() {
+	inputField.bind('paste', function() {
 		checkInput(true);	
+	});
+	
+	var oldValue = inputField.text();
+	inputField.bind("drop", function() {
+	    //when the drop happens the input value will not be updated yet
+	    //use a timeout to allow the input value to change.
+	    setTimeout($.proxy(function() {
+	        if (this.value !== oldValue) {
+	            $(this).trigger('change');
+	        }
+	    }, this), 0);
 	});
 	
 	$('#create_button').click(function() {
