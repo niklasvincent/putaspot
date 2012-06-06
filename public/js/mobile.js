@@ -23,6 +23,8 @@ function initialize(lat, lng)
 				addToList(spot.track, spot.artist, '/img/mobile/spotify.png', spot.url);
 			} else if ( spot.service === 'youtube' ) {
 				addToList(spot.title, '', '/img/mobile/youtube.png', spot.url);
+			} else if ( spot.service === 'soundcloud' ) {
+				addToList(spot.title, spot.user.name, '/img/mobile/soundcloud.png', spot.url);
 			}
 		});
 		$('#spots').listview('refresh');
