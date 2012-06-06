@@ -9,6 +9,7 @@ var app = Sammy('#main', function() {
 
 function showMeta(spot, marker)
 {
+	$('#info').fadeOut();
 	if ( spot.service === 'spotify' && spot.type === 'song' ) {
 		$('#meta').html('<iframe src="https://embed.spotify.com/?uri='+spot.url+'" width="300" height="380" frameborder="0" allowtransparency="true"></iframe>').fadeIn();
 	} else if ( spot.service === 'spotify' && spot.type === 'playlist' ) {
@@ -106,20 +107,20 @@ function placeMarker(location) {
 	marker.setDraggable(true);
 	
 	google.maps.event.addListener(map, 'click', function(event) {
-    console.log(event);
 	  createdMarker.setPosition(event.latLng);
 		var newPosition = createdMarker.getPosition();
 		$('#lat').val(newPosition.lat());
 		$('#lng').val(newPosition.lng());
-    $('#input').offset({top: event.pixel.y, left: event.pixel.x+240}).fadeIn();
-    $('#url').focus();
+    	$('#input').offset({top: event.pixel.y, left: event.pixel.x+240}).fadeIn();
+    	$('#url').focus();
 	});
 	
-	google.maps.event.addListener(marker, 'dragend', function() {
+	google.maps.event.addListener(marker, 'dragend', function(event) {
 		var newPosition = marker.getPosition();
 		$('#lat').val(newPosition.lat());
 		$('#lng').val(newPosition.lng());
-		checkInput(false);
+		$('#input').offset({top: event.pixel.y, left: event.pixel.x+240}).fadeIn();
+	    $('#url').focus();
 	});
 	
 }
