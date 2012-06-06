@@ -116,6 +116,7 @@ function placeMarker(location) {
 		var newPosition = createdMarker.getPosition();
 		$('#lat').val(newPosition.lat());
 		$('#lng').val(newPosition.lng());
+    $('#url').focus();
 	});
 	
 	google.maps.event.addListener(marker, 'dragend', function() {
