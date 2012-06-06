@@ -20,7 +20,7 @@ function showMeta(spot, marker)
 	} else if ( spot.service === 'mixcloud' && spot.type === 'cast' ) {
 		$('#meta').html('<iframe width="560" height="315" src="'+spot.widget+'" frameborder="0" allowfullscreen></iframe>').fadeIn();
 	} else {
-		$('#meta').html('<a href="'+spot.url+'" target="_blank">'+spot.url+'</a>').fadeIn();
+		window.location = spot.url;
 	}
 }
 
