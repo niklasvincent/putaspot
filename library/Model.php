@@ -56,6 +56,7 @@ class Model
 	 */
 	public function near($lng, $lat)
 	{
+		global $_GET;
 		$pieces = array();
 		$latLng = array((float)$lat, (float)$lng);
 		$cursor = $this->content->find(array(
@@ -67,7 +68,9 @@ class Model
 		));
 		while ( $cursor->hasNext() ) {
 			$piece = $cursor->getNext();
-			unset($piece['url']);
+			if ( ! isset($_GET['m']) ) {
+				unset($piece['url']);
+			}
 			$pieces[] = $piece;
 		}
 		return $pieces;

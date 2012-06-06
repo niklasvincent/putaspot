@@ -2,7 +2,7 @@ function getSpots(lat, lng, callback)
 {
 	$.ajax({
 	  type: 'GET',
-	  url: '/near.json?lat='+lat+'&lng='+lng,
+	  url: '/near.json?lat='+lat+'&lng='+lng+'&m',
 	  success: callback,
 	});
 }
