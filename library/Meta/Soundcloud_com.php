@@ -5,10 +5,12 @@ class Soundcloud_com
 	
 	public function resolve($content)
 	{
+		global $config;
+		
 		$query = sprintf(
 			'http://api.soundcloud.com/resolve.json?url=%s&client_id=%s',
 			$content['url'],
-			'78a498be8c6f28f9acec3555c4a5acc6'
+			$config['soundcloud']['api_key']
 		);
 		
 		$data = @json_decode(@file_get_contents($query), true);
@@ -20,6 +22,7 @@ class Soundcloud_com
 		$content['service'] 	= 'soundcloud';
 		$content['type']		= 'sound';
 		$content['length']		= $data['duration'];
+		$content['title']		= $data['title'];
 		$content['description']	= $data['description'];
 		$content['user']		= array( 
 										'name' 		=> $data['user']['username'],

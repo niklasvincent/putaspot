@@ -1,8 +1,11 @@
 [database]
-name="spotly"
+name="YOURDATABASENAME"
 host="localhost"
 port=27017
 
 [putaspot]
 expiration=604800
 distance=0.0022513449
+
+[soundcloud]
+api_key="YOURSOUNDCLOUD_API_KEY"
