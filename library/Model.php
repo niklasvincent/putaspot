@@ -90,10 +90,10 @@ class Model
 	{
 		global $_GET;
 		$pieces = array();
-		$box = array((float)$lat1, (float)$lng1, (float)$lat2, (float)$lng2);
+		$box = array(array((float)$lat1, (float)$lng1), array((float)$lat2, (float)$lng2));
 		$cursor = $this->content->find(array(
 			'loc' => array(
-				'$within' 		=> $box),
+				'$within' 		=> array('$box' => $box)),
 			'expires' => array(
 				'$gt' => time())
 		));
