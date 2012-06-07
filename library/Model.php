@@ -62,7 +62,7 @@ class Model
 		$cursor = $this->content->find(array(
 			'loc' => array(
 				'$near' => $latLng, 
-				'$maxDistance' => (float)$this->config['putaspot']['explore_distance']),
+				'$maxDistance' => (float)$this->config['putaspot']['distance']),
 			'expires' => array(
 				'$gt' => time())
 		));
