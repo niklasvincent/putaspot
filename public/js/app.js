@@ -97,6 +97,15 @@ function addSpot(spot)
   $('#input').fadeOut();
 }
 
+function refreshMap()
+{
+	var bounds = map.getBounds();
+	var ne = bounds.getNorthEast()
+	var sw = bounds.getSouthWest();
+	clearOverlays();
+	getSpotsWithin(sw.lat(), sw.lng(), ne.lat(), ne.lng());
+}
+
 function clearOverlays() {
   if ( markersArray ) {
     for (var i = 0; i < markersArray.length; i++ ) {
@@ -135,16 +144,9 @@ function initialize(lat, lng) {
   
 	map = new google.maps.Map(document.getElementById('map_canvas'), myOptions);
 		
-	google.maps.event.addListener(map, 'center_changed', function(event) {
-		var bounds = map.getBounds();
-		var ne = bounds.getNorthEast()
-		var sw = bounds.getSouthWest();
-		clearOverlays();
-		getSpotsWithin(sw.lat(), sw.lng(), ne.lat(), ne.lng());
-	});
-	
+	google.maps.event.addListener(map, 'center_changed', refreshMap);
+	google.maps.event.addListener(map, 'zoom_changed', refreshMap);
 	placeMarker(latLng);
-	
 	getSpots(lat, lng);
 }
 
