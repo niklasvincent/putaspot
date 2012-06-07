@@ -38,4 +38,6 @@ function getHeadersForURL($url)
 	return $results;
 }
 
+header(base64_decode('WC1Gb3JrLU1lOiBodHRwczovL2dpdGh1Yi5jb20vbmxpbmRibGFkL3B1dGFzcG90'));
+
 ?>

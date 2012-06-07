@@ -29,6 +29,13 @@ $app->get('/near.json', function () {
 	echo json_encode($model->near($_GET['lng'], $_GET['lat']));
 });
 
+// API delivers some sweet JSON of things in a box
+$app->get('/within.json', function () {
+	global $model;
+	global $_GET;
+	echo json_encode($model->near($_GET['lng1'], $_GET['lat1'], $_GET['lng2'], $_GET['lat2']));
+});
+
 // API delivers some sweet JSON of specific... stuff
 $app->get('/single.json', function () {
 	global $model;

@@ -77,6 +77,37 @@ class Model
 	}
 	
 	/**
+	 * Find content within given box defined by two corners
+	 *
+	 * @param string $lng 		Longitude 1
+	 * @param string $lat 		Latitude 1
+	 * @param string $lng 		Longitude 2
+	 * @param string $lat 		Latitude 2
+	 * @return array $contents	Array of contents
+	 * @author Niklas Lindblad
+	 */
+	public function within($lng1, $lat1, $lng2, $lat2)
+	{
+		global $_GET;
+		$pieces = array();
+		$box = array((float)$lat1, (float)$lng1, (float)$lat2, (float)$lng2);
+		$cursor = $this->content->find(array(
+			'loc' => array(
+				'$within' 		=> $box),
+			'expires' => array(
+				'$gt' => time())
+		));
+		while ( $cursor->hasNext() ) {
+			$piece = $cursor->getNext();
+			if ( ! isset($_GET['m']) ) {
+				unset($piece['url']);
+			}
+			$pieces[] = $piece;
+		}
+		return $pieces;
+	}
+	
+	/**
 	 * Retrieve a single piece of content near given longitude, latitude
 	 *
 	 * @param string $id		Content ID
