@@ -182,9 +182,13 @@ class Model
 					
 		// Normalize URL and retrieve service name
 		$content['url'] = strip_tags($content['url']);
+		if ( ! preg_match('/^[a-z]*:\/\//', $content['url']) && ! strstr($content['url'], 'spotify:')) {
+			$content['url'] = 'http://' . $content['url'];
+		}
 		$this->url->setUrl($content['url']);
-		$url = $this->url->normalize();
+		$this->url->normalize();
 		$service = $this->url->getService();
+		$content['url'] = $this->url->getUrl();
 		
 		// Check for suitable meta-data class
 		$class = str_replace('.', '_', ucfirst($service));
