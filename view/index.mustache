@@ -1,6 +1,7 @@
 <form action="#" method="post" id="geocode">
   <h2>Go to location</h2>
 	<input type="text" value="" id="address" name="url" />
+	<input type="hidden" value="" id="zoom" name="zoom" />
 	<input id="geocode_button" style="display: none;" type="button" value="Go!" class="btn" />
 </form>
 
@@ -21,7 +22,7 @@
 
 	<br />
 
-	<a href="https://twitter.com/share" class="twitter-share-button" data-hashtags="putaspot">Tweet</a>
+	<a href="https://twitter.com/share" id="twitter-button" class="twitter-share-button" data-hashtags="putaspot">Tweet</a>
 	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
 	
 	<a class="FlattrButton" style="display:none;" rev="flattr;button:compact;" href="http://putaspot.com/"></a>

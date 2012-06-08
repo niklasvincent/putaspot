@@ -1,14 +1,16 @@
 var app = Sammy('#main', function() {
 			
 	this.get('#/', function(context) {
-		context.$element().html('');
-		this.swap();
 	});
 	
 	this.get('#/:location', function(context) {
 		$('#address').val(decodeURIComponent(context.params['location']));
-		context.$element().html('');
-		this.swap();
+		setTimeout(function(){ $('#geocode').submit(); }, 2000);
+	});
+	
+	this.get('#/:zoom/:location', function(context) {
+		$('#address').val(decodeURIComponent(context.params['location']));
+		$('#zoom').val(decodeURIComponent(context.params['zoom']));
 		setTimeout(function(){ $('#geocode').submit(); }, 2000);
 	});
 	
@@ -202,6 +204,10 @@ function resolveAddress()
 			var lng = data[0].geometry.location.ab;
 			var newPosition = new google.maps.LatLng(lat, lng);
 			map.setCenter(newPosition);
+			var zoom = parseInt($('#zoom').val());
+			if ( zoom >= 11 ) {
+				map.setZoom(zoom);
+			}
 			getSpots(lat, lng);
 		}
 	});
@@ -241,7 +247,7 @@ $(document).ready(function() {
 	$('#share_button').click(function(e) {
 		var url = window.location.protocol + '//' + window.location.hostname + '/#/';
 		var currentCenter = map.getCenter();
-		url = url + currentCenter.lat() + '+' + currentCenter.lng();
+		url = url + map.getZoom() + '/' + currentCenter.lat() + '+' + currentCenter.lng();
 		$('#share_link').val(url);
 		$('#share_button').hide();
 		$('#share_link').fadeIn('slow');
