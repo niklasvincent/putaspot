@@ -9,7 +9,7 @@ var app = Sammy('#main', function() {
 		$('#address').val(decodeURIComponent(context.params['location']));
 		context.$element().html('');
 		this.swap();
-		setTimeout(function(){ $('#geocode').submit(); }, 1000);
+		setTimeout(function(){ $('#geocode').submit(); }, 2000);
 	});
 	
 });
@@ -207,6 +207,18 @@ function resolveAddress()
 	});
 }
 
+function getLocation()
+{
+	if ( map != null ) {
+		return;
+	}
+	if ( navigator.geolocation ) {
+  		navigator.geolocation.getCurrentPosition(gotLocation, function() { return; }, {enableHighAccuracy:true, maximumAge:30000, timeout:27000});
+	} else {
+		initialize(55.60934443876994, 13.002534539672865);
+	}
+}
+
 function gotLocation(position)
 {
 	var lat = position.coords.latitude;
@@ -216,12 +228,8 @@ function gotLocation(position)
 
 // start the application
 $(document).ready(function() {
-		
-	if ( navigator.geolocation ) {
-  		navigator.geolocation.getCurrentPosition(gotLocation);
-	} else {
-		initialize(55.60934443876994, 13.002534539672865);
-	}
+	
+	var locationCheck = setInterval(function() { if ( map == null ) { getLocation(); } else { clearInterval(locationCheck); } }, 500);
 	
 	app.run('#/');
 	
