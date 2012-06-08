@@ -5,6 +5,13 @@ var app = Sammy('#main', function() {
 		this.swap();
 	});
 	
+	this.get('#/:location', function(context) {
+		$('#address').val(decodeURIComponent(context.params['location']));
+		context.$element().html('');
+		this.swap();
+		setTimeout(function(){ $('#geocode').submit(); }, 1000);
+	});
+	
 });
 
 function single(spot, marker)
@@ -186,6 +193,20 @@ function placeMarker(location) {
 	
 }
 
+function resolveAddress()
+{
+	var geocoder = new google.maps.Geocoder();
+	geocoder.geocode( {'address': $('#address').val() }, function(data) {
+		if ( typeof(data[0].geometry) != 'undefined' ) {
+			var lat = data[0].geometry.location.$a;
+			var lng = data[0].geometry.location.ab;
+			var newPosition = new google.maps.LatLng(lat, lng);
+			map.setCenter(newPosition);
+			getSpots(lat, lng);
+		}
+	});
+}
+
 function gotLocation(position)
 {
 	var lat = position.coords.latitude;
@@ -194,27 +215,28 @@ function gotLocation(position)
 }
 
 // start the application
-$(document).ready(function() {	
-	app.run('#/');
-	
+$(document).ready(function() {
+		
 	if ( navigator.geolocation ) {
-	  navigator.geolocation.getCurrentPosition(gotLocation);
+  		navigator.geolocation.getCurrentPosition(gotLocation);
 	} else {
 		initialize(55.60934443876994, 13.002534539672865);
 	}
 	
+	app.run('#/');
+	
 	$('#geocode').submit(function(e) {
     	e.preventDefault();
-		var geocoder = new google.maps.Geocoder();
-		geocoder.geocode( {'address': $('#address').val() }, function(data) {
-			if ( typeof(data[0].geometry) != 'undefined' ) {
-				var lat = data[0].geometry.location.$a;
-				var lng = data[0].geometry.location.ab;
-				var newPosition = new google.maps.LatLng(lat, lng);
-				map.setCenter(newPosition);
-				getSpots(lat, lng);
-			}
-		});
+		resolveAddress();
+	});
+	
+	$('#share_button').click(function(e) {
+		var url = window.location.protocol + '//' + window.location.hostname + '/#/';
+		var currentCenter = map.getCenter();
+		url = url + currentCenter.lat() + '+' + currentCenter.lng();
+		$('#share_link').val(url);
+		$('#share_button').hide();
+		$('#share_link').fadeIn('slow');
 	});
 	
 	$('#submit').submit(function(e) {
