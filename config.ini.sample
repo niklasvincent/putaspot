@@ -10,3 +10,6 @@ explore_distance=0.14492753623188406
 
 [soundcloud]
 api_key="YOURSOUNDCLOUD_API_KEY"
+
+[google_analytics]
+api_key="YOURGOOGLEANALYTICS_API_KEY"

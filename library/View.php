@@ -27,6 +27,14 @@ class View
 	
 	public static function footer()
 	{
+		global $config;
+		
+		// Check for Google Analytics
+		if ( isset($config['google_analytics']['api_key']) && strstr($config['google_analytics']['api_key'], 'UA') ) {
+			self::render('google_analytics', 
+				array('google_analytics_api_key' => $config['google_analytics']['api_key']));
+		}
+		
 		self::render('foot', array());
 	}
 	
