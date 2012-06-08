@@ -129,6 +129,12 @@ class Model
 			'_id' => $id));
 		while ( $cursor->hasNext() ) {
 			$piece = $cursor->getNext();
+			
+			// Increment picked counter
+			$piece['picked'] = ( ! isset($piece['picked']) ) ? 1 : (int)$piece['picked'];
+			$updateQuery = array('$inc' => array('picked' => 1)); 
+			$this->content->update(array('_id' => $id), $updateQuery);
+			
 			return $piece;
 		}
 		return array('error' => 'TOO_FAR_AWAY');
