@@ -1,20 +1,52 @@
 <?php
+/**
+ * Spotify Meta Data using the Spotify Metadata API
+ *
+ * @package putaspot
+ * @author Niklas Lindblad
+ */
 
 class Spotify_com
 {
 
+	/**
+	 * Resolve content meta data.
+	 *
+	 * @param array $content 	Original user provided content data
+	 * @return array $content	Content data with additionaly retrieved meta data
+	 * @author Niklas Lindblad
+	 */
 	public function resolve($content)
 	{
+		/**
+		 * Check if provided content is a playlist or song.
+		 * Spotify songs are handled using a helper method.
+		 *
+		 * @author Niklas Lindblad
+		 */
 		if ( ! preg_match('/playlist/', $content['url']) ) {
 			return $this->song($content);
 		}
 		
+		/**
+		 * Currently Spotify does not have a public
+		 * API for playlist meta data.
+		 *
+		 * @author Niklas Lindblad
+		 */
 		$content['service'] 	= 'spotify';
 		$content['type']		= 'playlist';
 
 		return $content;
 	}
 	
+	/**
+	 * Retrieve and set meta data for a Spotify song.
+	 *
+	 * @param array $content 	The user provided data
+	 * @param array $newContent The new data
+	 * @author Niklas Lindblad
+	 */	
 	public function song($content)
 	{
 		$query = sprintf(

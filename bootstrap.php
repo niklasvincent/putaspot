@@ -1,7 +1,16 @@
 <?php
+/**
+ * Bootstrap the Putaspot application
+ *
+ * @package putaspot
+ * @author Niklas Lindblad
+ */
 
+// Define absolute paths.
 define('APPLICATION_PATH', dirname(__FILE__));
 define('APPLICATION_CONFIG', APPLICATION_PATH . '/config.ini');
+
+// Include dependencies
 require APPLICATION_PATH . '/library/URLNormalizer.php';
 require APPLICATION_PATH . '/library/HTTP.php';
 require APPLICATION_PATH . '/library/Slim/Slim.php';

@@ -1,9 +1,14 @@
 <?php
 /**
- * @file
+ * Putaspot - Demo application for MongoDB geospatial features
  *
- * Index of Putaspot: the revolutionary new thing that has to do with places
- * and stuff.
+ * A project by:
+ *
+ * Niklas Lindblad (@nlindblad) and
+ * Nicklas Nygren (@mossisen)
+ *
+ * @package putaspot
+ * @author Niklas Lindblad
  */
 
 // Introduce a web root constant for better relative path handling 
@@ -43,7 +48,7 @@ $app->get('/single.json', function () {
 	echo json_encode($model->single($_GET['id'], $_GET['lng'], $_GET['lat']));
 });
 
-// This is what's called when you PUT a SPOT
+// This is what's called when you PUT a SPOT. Although it's a POST request :-)
 $app->post('/add', function () {
 	$content = json_decode(file_get_contents("php://input"), true);
 

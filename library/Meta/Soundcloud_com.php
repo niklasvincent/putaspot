@@ -1,8 +1,23 @@
 <?php
+/**
+ * Soundcloud.com Meta Data using the Soundcloud.com API
+ *
+ * API key required to use their API.
+ *
+ * @package putaspot
+ * @author Niklas Lindblad
+ */
 
 class Soundcloud_com
 {
 	
+	/**
+	 * Resolve content meta data.
+	 *
+	 * @param array $content 	Original user provided content data
+	 * @return array $content	Content data with additionaly retrieved meta data
+	 * @author Niklas Lindblad
+	 */
 	public function resolve($content)
 	{
 		global $config;
