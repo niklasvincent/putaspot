@@ -11,44 +11,70 @@
  * @author Niklas Lindblad
  */
 
-// Introduce a web root constant for better relative path handling 
+/**
+ * Introduce a web root constant for better relative path handling.
+ */
 define('WEB_ROOT', dirname(__FILE__));
 
 require WEB_ROOT . '/../bootstrap.php';
 $app = new Slim();
 
-// Get the standard webpage
+/**
+ * Get the standard webpage.
+ *
+ * @author Niklas Lindblad
+ */
 $app->get('/', function () {
     View::renderPage('index', array());
 });
 
-// Get the mobile version
+/**
+ * Get the mobile version.
+ *
+ * @author Niklas Lindblad
+ */
 $app->get('/m', function () {
     View::render('mobile', array());
 });
 
-// API delivers some sweet JSON of nearby... stuff
+/**
+ * Get near by spots as JSON.
+ *
+ * @author Niklas Lindblad
+ */
 $app->get('/near.json', function () {
 	global $model;
 	global $_GET;
 	echo json_encode($model->near($_GET['lng'], $_GET['lat']));
 });
 
-// API delivers some sweet JSON of things in a box
+/**
+ * Get spots within given area as JSON.
+ *
+ * @author Niklas Lindblad
+ */
 $app->get('/within.json', function () {
 	global $model;
 	global $_GET;
 	echo json_encode($model->within($_GET['lng1'], $_GET['lat1'], $_GET['lng2'], $_GET['lat2']));
 });
 
-// API delivers some sweet JSON of specific... stuff
+/**
+ * Get information about a single spot as JSON.
+ *
+ * @author Niklas Lindblad
+ */
 $app->get('/single.json', function () {
 	global $model;
 	global $_GET;
 	echo json_encode($model->single($_GET['id'], $_GET['lng'], $_GET['lat']));
 });
 
-// This is what's called when you PUT a SPOT. Although it's a POST request :-)
+/**
+ * Add a spot using POST.
+ *
+ * @author Niklas Lindblad
+ */
 $app->post('/add', function () {
 	$content = json_decode(file_get_contents("php://input"), true);
 
