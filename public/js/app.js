@@ -291,27 +291,30 @@ function placeMarker(location) {
 	marker.setDraggable(true); // Make it draggable
 	
 	google.maps.event.addListener(map, 'click', function(event) {
-	  createdMarker.setPosition(event.latLng);
-		var newPosition = createdMarker.getPosition();
-		$('#lat').val(newPosition.lat());
-		$('#lng').val(newPosition.lng());
-    	$('#input').offset({top: event.pixel.y, left: event.pixel.x+240}).fadeIn();
-    	$('#url').focus();
+	  	createdMarker.setPosition(event.latLng);
+		showInputField(createdMarker, event);
 	});
 	
 	google.maps.event.addListener(marker, 'dragend', function(event) {
-		var newPosition = marker.getPosition();
-		$('#lat').val(newPosition.lat());
-		$('#lng').val(newPosition.lng());
-		$('#input').offset({top: event.pixel.y, left: event.pixel.x+240}).fadeIn();
-	    $('#url').focus();
+		showInputField(marker, event);
 	});
 	
-	/**
-	 *  TODO: Make a new function for the input field placement to reduce
-	 *        code duplicity.
-	 */
-	
+}
+
+/**
+ * Show URL input field above input marker.
+ *
+ * @param marker The marker object
+ * @param event  The event object that describes what happened ('click'/'dragend')
+ * @author Niklas Lindblad
+ */
+function showInputField(marker, event)
+{
+	var newPosition = marker.getPosition();
+	$('#lat').val(newPosition.lat());
+	$('#lng').val(newPosition.lng());
+	$('#input').offset({top: event.pixel.y, left: event.pixel.x+240}).fadeIn();
+    $('#url').focus();
 }
 
 /**
