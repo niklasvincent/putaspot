@@ -1,13 +1,44 @@
+/**
+ * Variables used by the application.
+ *
+ * @author Niklas Lindblad
+ */
+var realPosition;		// The user's real position 
+var map;				// The Google Map instance
+var done;				// Whether the input marker has been placed
+var createdMarker;		// Newly created marker object
+var markersArray = [];	// Array of all markers on the map
+
+/**
+ * Define our routes using Sammy.
+ */
 var app = Sammy('#main', function() {
 			
+	/**
+	 * The default GET / does not have any assigned functionality
+	 * except rending the page.
+	 */
 	this.get('#/', function(context) {
 	});
 	
+	/**
+	 * If a location was passed in the URL, it will be geocoded
+	 * and the map will automatically change location.
+	 */
 	this.get('#/:location', function(context) {
+		/*
+		 * Basically: Set the input 'location' field to the value
+		 * from the URL and then trigger the submit() on the form.
+		 */
 		$('#address').val(decodeURIComponent(context.params['location']));
 		setTimeout(function(){ $('#geocode').submit(); }, 2000);
 	});
 	
+	/**
+	 * Since the map will not look identical without the proper zoom
+	 * level, there is an option to include a zoom level along with
+	 * the location string.
+	 */
 	this.get('#/:zoom/:location', function(context) {
 		$('#address').val(decodeURIComponent(context.params['location']));
 		$('#zoom').val(decodeURIComponent(context.params['zoom']));
@@ -16,6 +47,14 @@ var app = Sammy('#main', function() {
 	
 });
 
+/**
+ * Retrive information about a single spot.
+ *
+ * @param spot		The spot JSON data
+ * @param marker 	The marker representing the spot on the map
+ * @callback		Calls showMeta() on success
+ * @author Niklas Lindblad
+ */
 function single(spot, marker)
 {
 	$.ajax({
@@ -26,6 +65,15 @@ function single(spot, marker)
 	});	
 }
 
+/**
+ * Show meta data about a given spot.
+ *
+ * Triggered by the single() method on success.
+ *
+ * @param spot		The spot JSON data
+ * @param marker 	The marker representing the spot on the map
+ * @author Niklas Lindblad
+ */
 function showMeta(spot, marker)
 {
   if ( spot.error == 'TOO_FAR_AWAY' ) {
@@ -54,6 +102,15 @@ function showMeta(spot, marker)
 	}
 }
 
+/**
+ * Get all spots near a given latitude / longitude.
+ *
+ * Calls addSpot() for each spot retrieved.
+ *
+ * @param lat	Latitude
+ * @param lng 	Longitude
+ * @author Niklas Lindblad
+ */
 function getSpots(lat, lng)
 {
 	$.ajax({
@@ -68,6 +125,18 @@ function getSpots(lat, lng)
 	});
 }
 
+/**
+ * Get all spots within a box described by the coordinates
+ * of two corners.
+ *
+ * Calls addSpot() for each spot retrieved.
+ *
+ * @param lat1	Latitude for the first corner
+ * @param lng1	Longitude for the first corner
+ * @param lat2	Latitude for the second corner
+ * @param lng2	Longitude for the second corner
+ * @author Niklas Lindblad
+ */
 function getSpotsWithin(lat1, lng1, lat2, lng2)
 {
 	$.ajax({
@@ -82,6 +151,14 @@ function getSpotsWithin(lat1, lng1, lat2, lng2)
 	});
 }
 
+/**
+ * Update map to include marker for newly created spot.
+ *
+ * Calls addSpot() for each spot retrieved.
+ *
+ * @param spot	The newly created spot
+ * @author Niklas Lindblad
+ */
 function addSpot(spot)
 {
   if (spot.error == "TOO_FAR_AWAY") {
@@ -106,6 +183,13 @@ function addSpot(spot)
   $('#input').fadeOut();
 }
 
+/**
+ * Refresh the map (clear previous markers and retrieve new ones).
+ *
+ * Uses getSpotsWithin() with parameters from the Google Map object.
+ *
+ * @author Niklas Lindblad
+ */
 function refreshMap()
 {
 	var bounds = map.getBounds();
@@ -115,6 +199,11 @@ function refreshMap()
 	getSpotsWithin(sw.lat(), sw.lng(), ne.lat(), ne.lng());
 }
 
+/**
+ * Remove all existing markers form the Google Map.
+ *
+ * @author Niklas Lindblad
+ */
 function clearOverlays() {
   if ( markersArray ) {
     for (var i = 0; i < markersArray.length; i++ ) {
@@ -123,17 +212,26 @@ function clearOverlays() {
   }
 }
 
-// Google Maps
-var realPosition;
-var map;
-var done;
-var createdMarker;
-var markersArray = [];
-
+/**
+ * Initialize the Google Map instance.
+ *
+ * Also places a marker at the user's current position.
+ *
+ * Triggers getSpots() to fill the map.
+ *
+ * @param lat	Latitude
+ * @param lng	Longitude
+ * @author Niklas Lindblad
+ */
 function initialize(lat, lng) {
 	done = false;
+	
+	/**
+	 *	Convert given latitude / longitude to LatLng object.
+	 */
 	var latLng = new google.maps.LatLng(lat, lng);
 	realPosition = latLng;
+	
 	var myOptions = {
 		zoom: 18,
 		center: latLng,
@@ -152,13 +250,26 @@ function initialize(lat, lng) {
 	};
   
 	map = new google.maps.Map(document.getElementById('map_canvas'), myOptions);
-		
+	
+	/**
+	 * Make sure the map is refreshed whenever the user zooms or pans.
+	 */	
 	google.maps.event.addListener(map, 'center_changed', refreshMap);
 	google.maps.event.addListener(map, 'zoom_changed', refreshMap);
+		
 	placeMarker(latLng);
 	getSpots(lat, lng);
 }
 
+/**
+ * Place an input marker at the given location.
+ *
+ * Will show the URL input field on click and after
+ * being dragged.
+ *
+ * @param location LatLng object
+ * @author Niklas Lindblad
+ */
 function placeMarker(location) {
 	if ( done == false ) {
 		var marker = new google.maps.Marker({
@@ -171,10 +282,13 @@ function placeMarker(location) {
 		return;
 	}
 	
+	/**
+	 * Update the form fields (hidden) that holds the coordinates.
+	 */
 	$('#lat').val(marker.getPosition().lat());
 	$('#lng').val(marker.getPosition().lng());
 	
-	marker.setDraggable(true);
+	marker.setDraggable(true); // Make it draggable
 	
 	google.maps.event.addListener(map, 'click', function(event) {
 	  createdMarker.setPosition(event.latLng);
@@ -193,8 +307,23 @@ function placeMarker(location) {
 	    $('#url').focus();
 	});
 	
+	/**
+	 *  TODO: Make a new function for the input field placement to reduce
+	 *        code duplicity.
+	 */
+	
 }
 
+/**
+ * Resolve the address in the location text field.
+ *
+ * Uses the Google Maps provided Geocoder.
+ *
+ * After the address is resolved, update map and
+ * retrieve nearby spots.
+ *
+ * @author Niklas Lindblad
+ */
 function resolveAddress()
 {
 	var geocoder = new google.maps.Geocoder();
@@ -213,6 +342,17 @@ function resolveAddress()
 	});
 }
 
+/**
+ * Get user's current location using the new Geolocation
+ * API Specification from W3C:
+ *
+ * <http://dev.w3.org/geo/api/spec-source.html>
+ *
+ * Will show the URL input field on click and after
+ * being dragged.
+ *
+ * @author Niklas Lindblad
+ */
 function getLocation()
 {
 	if ( map != null ) {
@@ -225,6 +365,16 @@ function getLocation()
 	}
 }
 
+/**
+ * Called after a successfull location lookup in getLocation().
+ *
+ * Initializes the Google Map by calling initialize().
+ *
+ * Will show the URL input field on click and after
+ * being dragged.
+ *
+ * @author Niklas Lindblad
+ */
 function gotLocation(position)
 {
 	var lat = position.coords.latitude;
@@ -232,18 +382,52 @@ function gotLocation(position)
 	initialize(lat, lng);
 }
 
-// start the application
+/**
+ * Some things that need to happen as soon as the DOM is ready.
+ *
+ * @author Niklas Lindblad
+ */
 $(document).ready(function() {
 	
+	/**
+	 * Since some devices (especially Android, it seems) takes
+	 * a long time retrieving the current position, the location
+	 * is checked every 500 ms to compensate for the difference
+	 * in initialization time.
+	 *
+	 * Since I do not own an Android device, I cannot verify
+	 * that this works all the time.
+	 *
+	 * @author Niklas Lindblad
+	 */
 	var locationCheck = setInterval(function() { if ( map == null ) { getLocation(); } else { clearInterval(locationCheck); } }, 500);
 	
+	/**
+	 * Run the application using Sammy.
+	 *
+	 * @author Niklas Lindblad
+	 */
 	app.run('#/');
 	
+	/**
+	 * Define submit() event for the Geocode address input field.
+	 *
+	 * @author Niklas Lindblad
+	 */
 	$('#geocode').submit(function(e) {
     	e.preventDefault();
 		resolveAddress();
 	});
 	
+	/**
+	 * Define click() event for the location sharing button.
+	 *
+	 * Basically constructs the URL for the current map view
+	 * and puts in a text field where it can be copied and
+	 * shared.
+	 *
+     * @author Niklas Lindblad
+	 */
 	$('#share_button').click(function(e) {
 		var url = window.location.protocol + '//' + window.location.hostname + '/#/';
 		var currentCenter = map.getCenter();
@@ -253,6 +437,11 @@ $(document).ready(function() {
 		$('#share_link').fadeIn('slow');
 	});
 	
+	/**
+	 * Define submit() event for the URL input field.
+	 *
+	 * @author Niklas Lindblad
+	 */
 	$('#submit').submit(function(e) {
     	e.preventDefault();
 		var content = {
@@ -261,8 +450,14 @@ $(document).ready(function() {
 			"user_loc": [realPosition.lat(), realPosition.lng()]
 		};
 		
-		createdMarker.setMap(null);
+		createdMarker.setMap(null); // Remove the input marker
 		
+		/**
+		 * AJAX call to add the new spot.
+		 *
+		 * @callback addSpot() on success.
+		 * @author Niklas Lindblad
+		 */
 		$.ajax({
 		  type: 'POST',
 		  url: '/add',
