@@ -198,17 +198,17 @@ function placeMarker(location) {
 function resolveAddress()
 {
 	var geocoder = new google.maps.Geocoder();
-	geocoder.geocode( {'address': $('#address').val() }, function(data) {
-		if ( typeof(data[0].geometry) != 'undefined' ) {
-			var lat = data[0].geometry.location.$a;
-			var lng = data[0].geometry.location.ab;
-			var newPosition = new google.maps.LatLng(lat, lng);
+	geocoder.geocode( {'address': $('#address').val() }, function(results, status) {
+		if ( status == google.maps.GeocoderStatus.OK && results[0]) {
+			var newLat = results[0].geometry.location.lat();
+			var newLng = results[0].geometry.location.lng();
+			var newPosition = new google.maps.LatLng(newLat, newLng);
 			map.setCenter(newPosition);
 			var zoom = parseInt($('#zoom').val());
 			if ( zoom >= 11 ) {
 				map.setZoom(zoom);
 			}
-			getSpots(lat, lng);
+			getSpots(newLat, newLng);
 		}
 	});
 }
