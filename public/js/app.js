@@ -76,30 +76,34 @@ function single(spot, marker)
  */
 function showMeta(spot, marker)
 {
-  if ( spot.error == 'TOO_FAR_AWAY' ) {
-    alert('Ooop! That spot\'s a bit far away. Guess you\'ll have to go there!');
-    return;
-  }
-	if ( null === spot ) {
+	if ( spot.error == 'TOO_FAR_AWAY' ) {
+		alert('Ooop! That spot\'s a bit far away. Guess you\'ll have to go there!');
 		return;
 	}
-	if ( typeof(spot.url) === 'undefined' ) {
+	
+	if ( null === spot || typeof(spot.url) === 'undefined' ) {
 		return;
 	}
-	$('#info').fadeOut();
-	if ( spot.service === 'spotify' && spot.type === 'song' ) {
-		$('#meta').html('<iframe src="https://embed.spotify.com/?uri='+spot.url+'" width="300" height="380" frameborder="0" allowtransparency="true"></iframe>').fadeIn();
-	} else if ( spot.service === 'spotify' && spot.type === 'playlist' ) {
-		$('#meta').html('<iframe src="https://embed.spotify.com/?uri='+spot.url+'&theme=white" width="300" height="380" frameborder="0" allowtransparency="true"></iframe>').fadeIn();
-	} else if ( spot.service === 'soundcloud' ) {
-		$('#meta').html('<iframe width="100%" height="166" scrolling="no" frameborder="no" src="http://w.soundcloud.com/player/?url=http%3A%2F%2Fapi.soundcloud.com%2Ftracks%2F'+spot.track_id+'&show_artwork=true"></iframe>').fadeIn();
-	} else if ( spot.service === 'youtube' ) {
-		$('#meta').html('<iframe width="560" height="315" src="http://www.youtube.com/embed/'+spot.video_id+'" frameborder="0" allowfullscreen></iframe>').fadeIn();
-	} else if ( spot.service === 'mixcloud' && spot.type === 'cast' ) {
-		$('#meta').html('<iframe width="560" height="315" src="'+spot.widget+'" frameborder="0" allowfullscreen></iframe>').fadeIn();
+	
+	if ( typeof(spot.type) != 'undefined' ) {
+		spot[spot.type] = true;
+	}
+	
+	if ( typeof(spot.service) === 'undefined' ) {
+		var templateURL = '/templates/default.mustache';
 	} else {
-		window.location = spot.url;
+		var templateURL = '/templates/' + spot.service + '.mustache';
 	}
+	
+	$.ajax({
+		type: 'GET',
+		url: templateURL,
+		success: function(template) {
+			$('#info').fadeOut();
+			$('#meta').html(Mustache.render(template, spot)).fadeIn();
+		}
+	});
+
 }
 
 /**
