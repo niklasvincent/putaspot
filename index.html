@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="Putaspot : Putaspot is a simple but awesome service/framework for geo based discovery and sharing of all kinds of digital content. Spotify (tracks and playlists), Soundcloud, Youtube and Mixcloud are playable using the map!" />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Putaspot</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/nlindblad/putaspot">View on GitHub</a>
+
+          <h1 id="project_title">Putaspot</h1>
+          <h2 id="project_tagline">Putaspot is a simple but awesome service/framework for geo based discovery and sharing of all kinds of digital content. Spotify (tracks and playlists), Soundcloud, Youtube and Mixcloud are playable using the map!</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/nlindblad/putaspot/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/nlindblad/putaspot/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>What is it?</h1>
+
+<p>Putaspot is meant to be a simple boilerplate for applications using geotagged content. The basic idea is that any URL can be associated with location data.</p>
+
+<p>It was put together due to boredome during a couple of summer afternoons by <a href="http://twitter.com/nlindblad">@nlindblad</a> and <a href="http://twitter.com/mossisen">@Mossisen</a>.</p>
+
+<h1>License</h1>
+
+<p>Distributed under the GNU AFFERO GENERAL PUBLIC LICENSE <a href="http://www.gnu.org/licenses/agpl-3.0.html">http://www.gnu.org/licenses/agpl-3.0.html</a>.</p>
+
+<p>All logos and trademarks are the property of the respective trademark owners.</p>
+
+<h1>Screenshots</h1>
+
+<h2>Desktop Version</h2>
+
+<p>Google Maps API, HTML5 navigation (for positioning) and JQuery.</p>
+
+<p><img src="http://dl.dropbox.com/u/1236795/putaspot-desktop.png"></p>
+
+<h2>Mobile Version</h2>
+
+<p>jQuery Mobile, jQuery and HTML5 navigation (for positioning).</p>
+
+<p><img src="http://dl.dropbox.com/u/1236795/putaspot-mobile.png"></p>
+
+<h1>API</h1>
+
+<p>There are serveral ways to extend the functionality of this simple application. Either by integrating into other applications or extending the content handling directly.</p>
+
+<h2>External (HTTP)</h2>
+
+<p>The same end-points used by both the desktop and mobile version can be used as a stand-alone API for other applications:</p>
+
+<pre><code>GET /near.json?lat=53.967644&amp;lng=13.993422
+</code></pre>
+
+<p>Will result in a JSON list of content near the given location:</p>
+
+<pre><code>[
+    {
+        "_id": {
+            "$id": "4fce736227cd5c953a000000"
+        },
+        "loc": [
+            53.9676547,
+            13.9935683
+        ],
+        "added": 1338930018,
+        "expires": 1339534818,
+        "service": "spotify",
+        "type": "song",
+        "artist": "Bomfunk MC's",
+        "track": "Freestyler",
+        "popularity": "0.46590",
+        "length": 306
+    },
+    {
+        "_id": {
+            "$id": "4fce5d0427cd5c6830000000"
+        },
+        "loc": [
+            53.967821261857,
+            13.993965139951
+        ],
+        "added": 1338924292,
+        "expires": 1339529092,
+        "service": "spotify",
+        "type": "song",
+        "artist": "Kraftwerk",
+        "track": "Computer Love",
+        "popularity": "0.00000",
+        "length": 435.573
+    }
+]
+</code></pre>
+
+<p>In order to retrieve a piece of content, the user must be nearby:</p>
+
+<pre><code>GET /single.json?lat=53.967644&amp;lng=13.993422&amp;id=4fce5d0427cd5c6830000000
+</code></pre>
+
+<p>will either return 'null' (if not close enough) or the content (with URL) if the user is within reach.</p>
+
+<h2>Internal (Plugins)</h2>
+
+<p>Whenever a piece of content is analyzed by the back-end (before being added to the database) the top domain (e.g. "spotify.com") is extracted and formatted as</p>
+
+<pre><code>$class = str_replace('.', '_', ucfirst($service));
+</code></pre>
+
+<p>which would turn "spotify.com" into "Spotify_com".</p>
+
+<p>The next step is to try to find a matching file in the library/Meta/ directory. If a file is found, it is included a new instance of the presumed class is created:</p>
+
+<pre><code>$meta = new $class;
+</code></pre>
+
+<p>In the last step the content array (so far only containing geotag and URL) is passed through the resolve() method of the plugin class:</p>
+
+<pre><code>$content = $meta-&gt;resolve($content);
+</code></pre>
+
+<p>Inside the plugin class things like meta-data lookup can be done. Check out the default plugin classes that retrieves meta-data about content from Youtube, Spotify and Soundcloud.</p>
+
+<h2>Install</h2>
+
+<p>Requirements:</p>
+
+<ul>
+<li>PHP5 (only tested with PHP 5.3)</li>
+<li>MongoDB extension for PHP</li>
+<li>MongoDB 2.0.5 (should work with as low as 1.9)</li>
+</ul><h3>Geospatial Indexing in MongoDB</h3>
+
+<p>To turn on Geospatial indexing:</p>
+
+<pre><code>use YOURDATABASENAME;
+db.content.ensureIndex( { loc : "2d" } );
+db.log.ensureIndex( { loc : "2d" } );
+</code></pre>
+
+<h3>Apache2 VirtualHost Example</h3>
+
+<pre><code>&lt;VirtualHost *:80&gt;
+        ServerAdmin you@yourdomain.com
+        ServerName      yourdomain.com
+        ServerAlias     youralias.com
+        VirtualDocumentRoot /var/www/pathtoputaspot/public/
+        &lt;Directory /var/www/pathtoputaspot/public/&gt;
+            AllowOverride All
+            Allow from All
+            Satisfy Any
+        &lt;/Directory&gt;
+        LimitInternalRecursion 15
+        LogFormat "%v %h %l %u %t \"%r\" %&gt;s %b \"%{Referer}i\" \"%{User-agent}i\"" vcommon
+        ErrorLog /var/log/apache2/error.log
+        LogLevel debug
+        CustomLog /var/log/apache2/access.log vcommon
+&lt;/VirtualHost&gt;
+</code></pre>
+
+<h3>Application Configuration (config.ini)</h3>
+
+<pre><code>[database]
+name="YOURDATABASENAME"
+host="localhost"
+port=27017
+
+[putaspot]
+expiration=604800
+distance=0.0045026898
+explore_distance=0.14492753623188406
+
+[soundcloud]
+api_key="YOURSOUNDCLOUD_API_KEY"
+</code></pre>
+
+<ul>
+<li><p>expiration: After this period (seconds) the content will no longer be listed.</p></li>
+<li><p>distance: Allowed distance to "discover" as a user. Defaults to about 250 meters.</p></li>
+<li><p>explore_distance: Limit for Google map refresh at zoom/pan. Defaults to about 10 miles.</p></li>
+<li><p>api_key: Soundcloud API key <a href="http://developers.soundcloud.com/">http://developers.soundcloud.com/</a></p></li>
+</ul>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Putaspot maintained by <a href="https://github.com/nlindblad">nlindblad</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
